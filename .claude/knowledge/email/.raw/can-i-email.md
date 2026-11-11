@@ -15,3 +15,10 @@
 - html-div (tested 2020-05-08): yes everywhere; notes still recommend tables for Outlook 2007–2019 Windows.
 - css-border-radius (tested 2021-03-09): yes except Outlook Windows (VML RoundRect).
 - Caveat: the support icons were not in the fetched text; status was inferred from footnotes.
+
+## Round 3 (2026-11-10): animated images
+- image-gif (tested 2020-02-06): Gmail, Apple Mail, Outlook Mac/.com/mobile display (no animation note); Outlook Windows 2007–2019 partial "does not support animated gif"; 2019 + Office 365 plays 3 times then a play button.
+- image-apng (tested 2020-02-06): supported in every focus client; page note: where it fails it shows the first frame.
+- image-webp: Gmail converts to JPG and no animation; Windows Mail no animation.
+- image-avif (tested 2023-01-14): Gmail converts animated AVIF to GIF; some Apple Mail (13.1, iOS 16.2) and Outlook (2023-01) entries do not support animated AVIF.
+- html-video (tested 2019-09-16): Gmail replaces the tags with <u>; Apple iOS needs controls, no autoplay; Outlook.com and mobile apps strip or block (CSP).
