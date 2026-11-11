@@ -1,5 +1,5 @@
 ---
-summary: Images in HTML email signatures: hosting vs base64, Gmail signature limits, size and retina, formats, alt text and image blocking, dark mode logos
+summary: Images in HTML email signatures: hosting vs base64, Gmail signature limits, size and retina, formats, animated images (GIF, APNG), alt text and image blocking, dark mode logos
 tier: advisory
 last_verified: 2026-11-10
 review_by: 2027-05-10
@@ -22,6 +22,14 @@ sources:
     url: https://www.caniemail.com/features/image-webp/
   - publisher: Can I Email
     url: https://www.caniemail.com/features/html-img/
+  - publisher: Can I Email
+    url: https://www.caniemail.com/features/image-gif/
+  - publisher: Can I Email
+    url: https://www.caniemail.com/features/image-apng/
+  - publisher: Can I Email
+    url: https://www.caniemail.com/features/image-avif/
+  - publisher: Can I Email
+    url: https://www.caniemail.com/features/html-video/
 ---
 
 # Images in email signatures
@@ -59,6 +67,15 @@ sources:
 - Do not rely on SVG for a logo in Gmail: it rasterizes linked SVG to PNG, and the Gmail iOS and Android apps show it only for non-Google accounts. [Can I Email: https://www.caniemail.com/features/image-svg/]
 - Do not rely on WebP in Gmail: every Gmail client converts it to JPG and drops animation. [Can I Email: https://www.caniemail.com/features/image-webp/]
 - The plain `<img>` element is supported without caveats in Apple Mail, every Gmail client and every Outlook client. [Can I Email: https://www.caniemail.com/features/html-img/]
+
+## Animated images
+<!-- tags: topic=imagery,motion,logo; platform=email; concern=compatibility; keywords=animated gif, apng, animated png, animated webp, avif, video, logo animado, animación -->
+- Animated GIF animates in Gmail, Apple Mail, Outlook for Mac and Outlook.com, but Outlook for Windows 2007–2019 does not animate it (with Office 365 in 2019 it plays 3 times, then shows a play button). [Can I Email: https://www.caniemail.com/features/image-gif/]
+- Animated PNG (APNG) is listed as supported in every Gmail, Apple Mail and Outlook client, and where it fails it shows the first frame. [Can I Email: https://www.caniemail.com/features/image-apng/]
+- Make the first frame of an animated logo the final brand mark, because clients that do not animate show only that frame. [Can I Email: https://www.caniemail.com/features/image-apng/]
+- Do not animate with WebP: Gmail converts it to JPG and Windows Mail drops the animation. [Can I Email: https://www.caniemail.com/features/image-webp/]
+- Avoid animated AVIF: Gmail converts it to GIF and some Apple Mail and Outlook versions do not animate it. [Can I Email: https://www.caniemail.com/features/image-avif/]
+- Never use `<video>` in a signature: Gmail replaces the tags and Outlook.com and the mobile apps strip or block playback. [Can I Email: https://www.caniemail.com/features/html-video/]
 
 ## Alt text and image blocking
 <!-- tags: topic=imagery; platform=email; concern=a11y,compatibility; keywords=alt text, image blocking, images off, texto alternativo, bloqueo de imágenes -->

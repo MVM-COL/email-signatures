@@ -5,5 +5,5 @@
 | Base | File | What for |
 |---|---|---|
 | CONVENTIONS | `CONVENTIONS.md` | MVM email-signature project decisions: logo hosting, font stack, chosen direction, domain as one variable |
-| email | `email/signature-images.md` | Images in HTML email signatures: hosting vs base64, Gmail signature limits, size and retina, formats, alt text and image blocking, dark mode logos |
+| email | `email/signature-images.md` | Images in HTML email signatures: hosting vs base64, Gmail signature limits, size and retina, formats, animated images (GIF, APNG), alt text and image blocking, dark mode logos |
 | email | `email/signature-code.md` | Coding HTML email signatures: where CSS lives (inline vs style), tables vs divs, web fonts and fallbacks, responsive, dark mode, accessibility, installing in macOS Mail |
