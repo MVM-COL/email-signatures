@@ -1,7 +1,7 @@
 ---
 summary: Coding HTML email signatures: where CSS lives (inline vs style), tables vs divs, web fonts and fallbacks, responsive, dark mode, accessibility, installing in macOS Mail
 tier: advisory
-status: ambiguous   # Gmail app web fonts: Can I Email says yes (2023), Litmus says no; settle in QA (#7)
+status: ambiguous
 last_verified: 2026-11-10
 review_by: 2027-05-10
 sources:
@@ -36,6 +36,7 @@ sources:
 > A pasted signature lives inside the `<body>` of each message, so rules about `<style>` in
 > `<head>` apply to full emails, not to signatures. Can I Email data was tested 2019–2023;
 > Litmus pages carry a "2+ years old" note. Re-check in the QA pass.
+> Ambiguous: Can I Email (2023) says the Gmail apps load web fonts; Litmus says they don't. Settle in QA (#7).
 
 ## Where the CSS lives
 <!-- tags: topic=layout; platform=email; concern=compatibility; keywords=inline styles, style element, style block, head, body, css inline, estilos en línea -->
