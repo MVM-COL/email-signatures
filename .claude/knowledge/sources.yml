@@ -8,3 +8,5 @@ bases:
       - { publisher: "Litmus", url: "https://www.litmus.com/blog/" }
       - { publisher: "Google Gmail Help", url: "https://support.google.com/mail/" }
       - { publisher: "Can I Email", url: "https://www.caniemail.com/" }
+      - { publisher: "Google Developers", url: "https://developers.google.com/workspace/gmail/design/css" }
+      - { publisher: "Apple Support", url: "https://support.apple.com/guide/mail/" }
