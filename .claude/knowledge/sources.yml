@@ -1,0 +1,10 @@
+# Publishers for this repo's knowledge (same format as ~/dev/claude-kb/sources.yml)
+defaults:
+  refresh_after_days: 180
+
+bases:
+  email:
+    sources:
+      - { publisher: "Litmus", url: "https://www.litmus.com/blog/" }
+      - { publisher: "Google Gmail Help", url: "https://support.google.com/mail/" }
+      - { publisher: "Can I Email", url: "https://www.caniemail.com/" }
