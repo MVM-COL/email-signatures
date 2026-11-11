@@ -1,0 +1,3 @@
+# Google Developers — raw capture (2026-11-10)
+
+- developers.google.com/workspace/gmail/design/css: Gmail supports <style> blocks and standard CSS; may ignore unsupported properties/selectors; class, element and ID selectors; media types all/screen; features min/max-width, min/max-device-width, orientation, min/max-resolution; and, only. Long supported-property list (width, max-width, margin, padding, border-radius, font-*, line-height, text-align, vertical-align, object-fit, background-image…). Absent: position, transform, box-shadow, text-shadow, flex, grid. Not covered: inline style attributes, @font-face, message clipping.
