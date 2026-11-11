@@ -1,0 +1,6 @@
+# Litmus — raw capture (2026-11-10)
+
+- how-to-write-and-design-a-great-email-signature (published 2016-08-30, flagged "2+ years old"): host images, don't embed; src/href resolve to a web address; PNG icons, uniform size, brand colours; max four links, one or two social profiles; mobile campaign width ≤ 295 px (said of campaigns, not signatures); compelling alt text; test with images blocked, key info as text.
+- the-102-of-email-code-working-with-images (published 2020-05-01, flagged "2+ years old"): direct link to the image file (.png/.jpg/.gif); host on ESP, AWS or your own server; image ~2x the space for retina; set width/height attributes; under 1 MB, smaller is better; descriptive, succinct alt; no image-only emails.
+- coding-emails-for-dark-mode (published 2024-10-23): clients make no change, partial or full inversion; design with midtones; glow/stroke/shape for logos, "a glow works great with transparent PNGs with dark text"; swap images via prefers-color-scheme or [data-ogsc]; Outlook.com swaps need linked images; default image must work where swapping fails.
+- 404 on 2026-11-10: the-ultimate-guide-to-email-image-formats, the-ultimate-guide-to-retina-images-in-email, a-guide-to-email-signatures.

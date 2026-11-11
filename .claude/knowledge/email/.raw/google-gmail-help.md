@@ -1,0 +1,5 @@
+# Google Gmail Help — raw capture (2026-11-10)
+
+- answer/8395 (Create a Gmail signature): up to 10,000 characters; the image counts toward the limit, resize it on error; per-address signatures with "Send mail as"; default signatures for new mail and replies. No mention of HTML. iOS tab: Menu > Settings > Compose and Reply > Signature settings > Mobile Signature; without a mobile signature, new messages use the computer one. Nothing on images or HTML in mobile signatures.
+- answer/11468381 (Troubleshoot signatures): upload by URL, My Drive (public) or Upload; Drive sharing must be "Anyone with the link · Viewer"; Workspace admin may need to allow public sharing (answer/60781, not read); recommended 70–100 px high × 300–400 px wide, max 100 × 1000; deleted Drive image or Doc breaks it; oversized image breaks the text layout; fixes: re-upload, clear cache or cookies, incognito.
+- Not read: support.google.com/a/answer/2369512 (admin footer) redirects to knowledge.workspace.google.com/admin. Pending for issue #11.
