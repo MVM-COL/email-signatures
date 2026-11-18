@@ -62,6 +62,8 @@
     }
     .suffix { display: flex; align-items: stretch; }
     .suffix input { border-radius: var(--radius) 0 0 var(--radius); }
+    .check { display: flex; align-items: center; gap: 10px; font-weight: 600; min-height: 44px; cursor: pointer; }
+    .check input { width: 22px; height: 22px; min-height: 0; margin: 0; accent-color: var(--ink); }
     .suffix span {
       display: flex; align-items: center; padding: 0 12px; white-space: nowrap;
       background: var(--sand); border: 1px solid var(--ink-2); border-left: 0;
@@ -201,6 +203,14 @@
           </div>
         </div>
 
+        <div class="field" data-field="animated">
+          <label class="check" for="animated">
+            <input id="animated" name="animated" type="checkbox" aria-describedby="animated-hint">
+            Logo animado <span class="optional">(opcional)</span>
+          </label>
+          <span class="hint" id="animated-hint">El logo anterior se transforma en el nuevo una vez y se queda en el nuevo. Donde el correo no anima imágenes (por ejemplo Outlook en Windows) se ve el logo nuevo fijo.</span>
+        </div>
+
         <button class="primary" type="submit">Copiar firma</button>
         <div class="status" id="status" role="status" aria-live="polite"></div>
       </form>
@@ -303,6 +313,8 @@
   };
   CONFIG.website = 'https://' + CONFIG.domain;
   CONFIG.logo = CONFIG.assetsBase + 'simbolo-azul@2x.png';
+  // Animated APNG: plays once and stops on the new symbol; its first frame is the new symbol for clients that don't animate.
+  CONFIG.logoAnimated = CONFIG.assetsBase + 'simbolo-animado@2x.png';
 
   const FONT = "Barlow, 'Helvetica Neue', Helvetica, Arial, sans-serif";
   const C = { ink: '#141210', ink2: '#3A3632', link: '#0B56D9', rule: '#FFD500' };
@@ -322,6 +334,7 @@
       landline: nationalDigits($('landline').value),
       ext: digits($('ext').value),
       user: $('user').value.trim().toLowerCase(),
+      animated: $('animated').checked,
     };
   }
 
@@ -339,7 +352,7 @@
   }
 
   // Signature HTML: tables + inline styles only (KB email/signature-code). Specs: Figma › Specs.
-  function buildSignature(d, { placeholders = false, logo = CONFIG.logo } = {}) {
+  function buildSignature(d, { placeholders = false, logo = d.animated ? CONFIG.logoAnimated : CONFIG.logo } = {}) {
     const name = d.name || (placeholders ? 'Nombre Apellido' : '');
     const title = d.title || (placeholders ? 'Cargo' : '');
     const mobile = d.mobile || (placeholders ? '3101234567' : '');
@@ -388,7 +401,10 @@
   }
 
   // Preview uses the local file so it works before the asset is published; the copied HTML uses the absolute URL.
-  function renderPreview() { $('preview').innerHTML = buildSignature(readData(), { placeholders: true, logo: 'assets/v2/simbolo-azul@2x.png' }); }
+  function renderPreview() {
+    const d = readData();
+    $('preview').innerHTML = buildSignature(d, { placeholders: true, logo: d.animated ? 'assets/v2/simbolo-animado@2x.png' : 'assets/v2/simbolo-azul@2x.png' });
+  }
 
   function showErrors(errors) {
     document.querySelectorAll('.field').forEach((f) => f.classList.remove('has-error'));
