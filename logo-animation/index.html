@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Transición del logo · MVM</title>
+  <style>
+    :root { --ink: #141210; --ink-2: #3A3632; --page: #FFFFFF; --focus: #126BFD; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--page); color: var(--ink);
+      font-family: Barlow, 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .stage { width: min(80vw, 640px); }
+    .stage svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .controls { margin-top: 32px; text-align: center; }
+    button { min-height: 44px; padding: 0 20px; border: 1px solid var(--ink); border-radius: 10px; background: #fff;
+      color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+    button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .controls { display: flex; gap: 12px; justify-content: center; }
+    /* Without JavaScript only the final symbol shows. */
+    html:not(.js) #old { display: none; }
+    /* Render mode (frame capture): transparent, exact pixel size, no UI. */
+    body.render { display: block; min-height: 0; background: transparent; }
+    body.render .stage { width: var(--w); height: var(--h); }
+    body.render .stage svg { width: 100%; height: 100%; }
+    body.render .controls { display: none; }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Transición del logo de MVM">
+    <!-- Shared 144x81 canvas: the new symbol fills it; the old logo (132x78) is centred. -->
+    <svg id="logo" viewBox="0 0 144 81" role="img" aria-labelledby="logo-title">
+      <title id="logo-title">El logo anterior de MVM, dos vías, se transforma en el símbolo nuevo, la M de rampas.</title>
+      <defs>
+        <!-- Diagonal wipe at the ramp angle: reveals the blue symbol without blending colours. -->
+        <clipPath id="clip-wipe"><polygon id="wipe" points="-400,0 -60,0 -125,81 -400,81"/></clipPath>
+        <!-- "Salidito": starts on the right bar's diagonal edge and slides right, revealing the leg and step. -->
+        <clipPath id="clip-grow"><polygon id="grow-edge" points="-400,-20 141.610,-20 45.590,101 -400,101"/></clipPath>
+        <!-- Yellow arrives as a diagonal wipe too: no hard colour cut (KB motion/animation-principles#easing-and-timing). -->
+        <clipPath id="clip-frame"><rect width="144" height="80.348"/></clipPath>
+        <!-- Sunlight: a soft band that travels from the horizon toward us, turning the road yellow as it passes. -->
+        <linearGradient id="sun-grad" gradientUnits="userSpaceOnUse" x1="0" y1="-70" x2="0" y2="-34">
+          <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/>
+        </linearGradient>
+        <mask id="sun-mask" maskUnits="userSpaceOnUse" x="-60" y="-120" width="270" height="260">
+          <rect x="-60" y="-120" width="270" height="260" fill="url(#sun-grad)"/>
+        </mask>
+        <!-- A bright sheen rides the leading edge of the light, so it reads as sunlight rather than a dark fade. -->
+        <linearGradient id="glow-grad" gradientUnits="userSpaceOnUse" x1="0" y1="-74" x2="0" y2="-30">
+          <stop offset="0" stop-color="#000"/><stop offset="0.55" stop-color="#fff"/><stop offset="1" stop-color="#000"/>
+        </linearGradient>
+        <mask id="glow-mask" maskUnits="userSpaceOnUse" x="-60" y="-120" width="270" height="260">
+          <rect x="-60" y="-120" width="270" height="260" fill="url(#glow-grad)"/>
+        </mask>
+        <clipPath id="clip-lane-l"><use href="#road-l"/></clipPath>
+        <clipPath id="clip-lane-r"><use href="#road-r"/></clipPath>
+        <!-- The right bar = the final right piece cut at the bar's diagonal edge (same rounded corners, no stray points). -->
+        <clipPath id="clip-bar-r"><polygon points="-400,0 125.739,0 61.461,81 -400,81"/></clipPath>
+        <clipPath id="clip-yel"><polygon id="ywipe" points="-400,0 -60,0 -125,81 -400,81"/></clipPath>
+      </defs>
+
+      <!-- The old logo, centred on the 144x81 canvas (offset baked in), clipped to the visible frame. -->
+      <g id="old" clip-path="url(#clip-frame)">
+        <path id="road-l" d="M35.4023 1.5745H42.5977L71.8926 79.1956H6.1074L12.786 61.5Z" fill="#191818"/>
+        <path id="road-r" d="M101.4023 1.5745H108.598L137.893 79.1956H72.1074L78.786 61.5Z" fill="#191818"/>
+        <!-- Each road's markings are clipped to that road, so lines enter and leave through its edges. -->
+        <g id="lanes-l" clip-path="url(#clip-lane-l)">
+          <path class="edge" id="edge-lr" d="M41.7561 1.5L71.106 79.2698" stroke="#FFFFFF" stroke-width="1.79" stroke-linecap="round" fill="none"/>
+          <path class="edge" id="edge-ll" d="M36.2439 1.5L6.894 79.2698" stroke="#FFFFFF" stroke-width="1.79" stroke-linecap="round" fill="none"/>
+          <g id="dashes-l"></g>
+        </g>
+        <g id="lanes-r" clip-path="url(#clip-lane-r)">
+          <path class="edge" id="edge-rr" d="M107.756 1.5L137.106 79.2698" stroke="#FFFFFF" stroke-width="1.79" stroke-linecap="round" fill="none"/>
+          <path class="edge" id="edge-rl" d="M102.2439 1.5L72.894 79.2698" stroke="#FFFFFF" stroke-width="1.79" stroke-linecap="round" fill="none"/>
+          <g id="dashes-r"></g>
+        </g>
+        <g id="sun" mask="url(#sun-mask)">
+          <path id="sun-l" fill="#FFD500"/>
+          <path id="sun-r" fill="#FFD500"/>
+        </g>
+        <g id="glow" mask="url(#glow-mask)" opacity="0.85">
+          <path id="glow-l" fill="#FFF4C2"/>
+          <path id="glow-r" fill="#FFF4C2"/>
+        </g>
+      </g>
+
+      <!-- The two bars in yellow, revealed over the dark roads by #clip-yel. -->
+      <g id="yel" clip-path="url(#clip-yel)">
+        <path d="M49.513 0.0979059C49.5625 0.0360236 49.6374 0 49.7167 0H82.6898C83.5647 0 84.0512 1.0121 83.5046 1.69533L20.8959 79.9562C20.6979 80.2037 20.3981 80.3478 20.0811 80.3478H1.04348C0.467182 80.3478 0 79.8806 0 79.3043V62.2637C0 62.0859 0.0604806 61.9135 0.171494 61.7748L49.513 0.0979059Z" fill="#FFD500" stroke="#FFD500" stroke-width="0.8" stroke-linejoin="round"/>
+        <path d="M91.4608 0.097907C91.5103 0.0360248 91.5852 0 91.6645 0H124.696C125.272 0 125.739 0.467181 125.739 1.04348V31.0435C125.739 33.3487 127.608 35.2174 129.913 35.2174H142.957C143.533 35.2174 144 35.6846 144 36.2609V79.3043C144 79.8806 143.533 80.3478 142.957 80.3478H98.6087C92.2694 80.3478 87.1304 75.2088 87.1304 68.8696V51.1504C87.1304 50.6572 86.5094 50.4394 86.2013 50.8245L62.8959 79.9562C62.6979 80.2037 62.3981 80.3478 62.0811 80.3478H43.8261C43.2498 80.3478 42.7826 79.8806 42.7826 79.3043V61.2202C42.7826 61.0425 42.8431 60.8701 42.9541 60.7313L91.4608 0.097907Z" clip-path="url(#clip-bar-r)" fill="#FFD500" stroke="#FFD500" stroke-width="0.8" stroke-linejoin="round"/>
+      </g>
+
+      <!-- Full right piece in yellow; only its leg and step are new, revealed by #clip-grow. -->
+      <g id="grow" clip-path="url(#clip-grow)" opacity="0">
+        <path id="grow-r" d="M91.4608 0.097907C91.5103 0.0360248 91.5852 0 91.6645 0H124.696C125.272 0 125.739 0.467181 125.739 1.04348V31.0435C125.739 33.3487 127.608 35.2174 129.913 35.2174H142.957C143.533 35.2174 144 35.6846 144 36.2609V79.3043C144 79.8806 143.533 80.3478 142.957 80.3478H98.6087C92.2694 80.3478 87.1304 75.2088 87.1304 68.8696V51.1504C87.1304 50.6572 86.5094 50.4394 86.2013 50.8245L62.8959 79.9562C62.6979 80.2037 62.3981 80.3478 62.0811 80.3478H43.8261C43.2498 80.3478 42.7826 79.8806 42.7826 79.3043V61.2202C42.7826 61.0425 42.8431 60.8701 42.9541 60.7313L91.4608 0.097907Z" fill="#FFD500" stroke="#FFD500" stroke-width="0.8" stroke-linejoin="round"/>
+      </g>
+
+      <!-- Final symbol (blue), clean master rebuilt 2026-11-18 (Figma eMail-Signatures › Specs › 47:2). Revealed by a diagonal wipe, so the colour change never blends. -->
+      <g id="new" clip-path="url(#clip-wipe)">
+        <path id="new-l" d="M49.513 0.0979059C49.5625 0.0360236 49.6374 0 49.7167 0H82.6898C83.5647 0 84.0512 1.0121 83.5046 1.69533L20.8959 79.9562C20.6979 80.2037 20.3981 80.3478 20.0811 80.3478H1.04348C0.467182 80.3478 0 79.8806 0 79.3043V62.2637C0 62.0859 0.0604806 61.9135 0.171494 61.7748L49.513 0.0979059Z" fill="#126BFD"/>
+        <path id="new-r" d="M91.4608 0.097907C91.5103 0.0360248 91.5852 0 91.6645 0H124.696C125.272 0 125.739 0.467181 125.739 1.04348V31.0435C125.739 33.3487 127.608 35.2174 129.913 35.2174H142.957C143.533 35.2174 144 35.6846 144 36.2609V79.3043C144 79.8806 143.533 80.3478 142.957 80.3478H98.6087C92.2694 80.3478 87.1304 75.2088 87.1304 68.8696V51.1504C87.1304 50.6572 86.5094 50.4394 86.2013 50.8245L62.8959 79.9562C62.6979 80.2037 62.3981 80.3478 62.0811 80.3478H43.8261C43.2498 80.3478 42.7826 79.8806 42.7826 79.3043V61.2202C42.7826 61.0425 42.8431 60.8701 42.9541 60.7313L91.4608 0.097907Z" fill="#126BFD"/>
+      </g>
+    </svg>
+  </main>
+  <div class="controls">
+    <button type="button" id="pause" aria-pressed="false">Pausar</button>
+    <button type="button" id="replay">Ver de nuevo</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+  <script>
+    gsap.registerPlugin(MorphSVGPlugin, DrawSVGPlugin);
+    const YELLOW = '#FFD500', DARK = '#191818';
+    const params = new URLSearchParams(location.search);
+    const render = params.get('render'); // e.g. ?render=96x54 → frame-capture mode
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches && !render;
+
+    if (render) {
+      const [w, h] = render.split('x').map(Number);
+      document.body.classList.add('render');
+      document.documentElement.style.setProperty('--w', w + 'px');
+      document.documentElement.style.setProperty('--h', h + 'px');
+      if (params.get('bg')) document.body.style.background = params.get('bg');
+    }
+
+    // ─── Scene ─────────────────────────────────────────────────────────────────────────────────────────
+    // A · the old logo, drawn flat (each road has its own vanishing point).
+    // B · the perspective is fixed: both roads converge to ONE vanishing point (camera 0, centred on it).
+    // C · a real camera move: the camera slides right and tilts down until the roads, seen from above, are the
+    //     two slanted bars of the new logo (camera 1). Everything is projected every frame, so perspective never
+    //     drops and the lane lines keep running until the camera lands.
+    const roadL = document.getElementById('road-l'), roadR = document.getElementById('road-r');
+    const NS = 'http://www.w3.org/2000/svg';
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    // World: ground plane y = 0, roads run along +Z. Widths are solved so the top view lands exactly on the bars.
+    const NV = Math.hypot(1, 0.8), N2 = { x: 1 / NV, y: 0.8 / NV }, D2 = { x: 0.8 / NV, y: -1 / NV }; // across / along
+    const K1 = (84.862 - 49.592) * N2.x / 65.6; // top-view scale
+    const WL = 65.6, WR = (125.739 - 91.539) * N2.x / K1, G = (91.539 - 84.862) * N2.x / K1;
+    const XL0 = -(G / 2 + WL), XL1 = -G / 2, XR0 = G / 2, XR1 = G / 2 + WR;
+    // Top view: screen = O + K1 (X·N2 + Z·D2). O puts the left road's inner edge on the left bar's right edge.
+    const TT = (42.783 - 84.862 - K1 * (XR0 - XL1) * N2.x - K1 * 80 * D2.x) / D2.x;
+    const O = { x: 84.862 - K1 * XL1 * N2.x + TT * D2.x, y: -K1 * XL1 * N2.y + TT * D2.y };
+    // The right road ends on the ground line that, seen from above, is the right bar's vertical cut (x = 42.783).
+    const zCut = (X) => (42.783 - O.x - K1 * X * N2.x) / (K1 * D2.x);
+    const ZFAR = 6000, ZNEAR_L = -400;
+    const WORLD = {
+      l: [[XL0, ZFAR], [XL1, ZFAR], [XL1, ZNEAR_L], [XL0, ZNEAR_L]],
+      r: [[XR0, ZFAR], [XR1, ZFAR], [XR1, zCut(XR1)], [XR0, zCut(XR0)]],
+    };
+    const EDGES = { '#edge-ll': [XL0, ZNEAR_L], '#edge-lr': [XL1, ZNEAR_L], '#edge-rl': [XR0, zCut(XR0)], '#edge-rr': [XR1, zCut(XR1)] };
+    const CENTER = { l: (XL0 + XL1) / 2, r: (XR0 + XR1) / 2 };
+
+    // Cameras. cam0: 107 units high, looking along +Z with the lens shifted so the horizon sits above the frame
+    // (ground Z = 100 is the frame bottom, Z = 400 the top). cam1: looking straight down; its ground position is
+    // solved so the top view reproduces O.
+    const cam0 = { C: [0, 107.13, 0], R: [1, 0, 0], U: [0, 1, 0], F: [0, 0, 1], f: 100, px: 72, py: -26.78 };
+    const H1 = 300, PX1 = 72, PY1 = 40.17;
+    const BX = (PX1 - O.x) / K1, BY = (PY1 - O.y) / K1, DET = N2.x * D2.y - D2.x * N2.y;
+    const cam1 = { C: [(BX * D2.y - D2.x * BY) / DET, H1, (N2.x * BY - N2.y * BX) / DET],
+      R: [N2.x, 0, D2.x], U: [-N2.y, 0, -D2.y], F: [0, -1, 0], f: K1 * H1, px: PX1, py: PY1 };
+
+    // Orientation is interpolated with quaternions (slerp), so the camera turns smoothly on the shortest path.
+    function quatFrom(R, U, F) { // rotation matrix with columns R, U, F
+      const [m00, m10, m20] = R, [m01, m11, m21] = U, [m02, m12, m22] = F, tr = m00 + m11 + m22;
+      if (tr > 0) { const s = Math.sqrt(tr + 1) * 2; return [s / 4, (m21 - m12) / s, (m02 - m20) / s, (m10 - m01) / s]; }
+      if (m00 > m11 && m00 > m22) { const s = Math.sqrt(1 + m00 - m11 - m22) * 2; return [(m21 - m12) / s, s / 4, (m01 + m10) / s, (m02 + m20) / s]; }
+      if (m11 > m22) { const s = Math.sqrt(1 + m11 - m00 - m22) * 2; return [(m02 - m20) / s, (m01 + m10) / s, s / 4, (m12 + m21) / s]; }
+      const s = Math.sqrt(1 + m22 - m00 - m11) * 2; return [(m10 - m01) / s, (m02 + m20) / s, (m12 + m21) / s, s / 4];
+    }
+    function slerp(a, b, t) {
+      let d = a.reduce((acc, v, i) => acc + v * b[i], 0); if (d < 0) { b = b.map((v) => -v); d = -d; }
+      if (d > 0.9995) { const r = a.map((v, i) => lerp(v, b[i], t)), l = Math.hypot(...r); return r.map((v) => v / l); }
+      const th = Math.acos(d), sn = Math.sin(th);
+      return a.map((v, i) => (Math.sin((1 - t) * th) * v + Math.sin(t * th) * b[i]) / sn);
+    }
+    const axes = ([w, x, y, z]) => ({
+      R: [1 - 2 * (y * y + z * z), 2 * (x * y + w * z), 2 * (x * z - w * y)],
+      U: [2 * (x * y - w * z), 1 - 2 * (x * x + z * z), 2 * (y * z + w * x)],
+      F: [2 * (x * z + w * y), 2 * (y * z - w * x), 1 - 2 * (x * x + y * y)],
+    });
+    const Q0 = quatFrom(cam0.R, cam0.U, cam0.F), Q1 = quatFrom(cam1.R, cam1.U, cam1.F);
+    function camAt(c) {
+      const up = Math.sign(c) * Math.pow(Math.abs(c), 1.6); // rises later than it slides: the camera travels in an arc
+      return { ...axes(slerp(Q0, Q1, c)),
+        C: [lerp(cam0.C[0], cam1.C[0], c), lerp(cam0.C[1], cam1.C[1], up), lerp(cam0.C[2], cam1.C[2], c)],
+        f: lerp(cam0.f, cam1.f, c), px: lerp(cam0.px, cam1.px, c), py: lerp(cam0.py, cam1.py, c) };
+    }
+
+    // Projection with near-plane clipping (points behind the camera are cut, never wrapped).
+    const NEAR = 2, dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const toCam = (K, X, Z) => { const v = [X - K.C[0], -K.C[1], Z - K.C[2]]; return [dot3(v, K.R), dot3(v, K.U), dot3(v, K.F)]; };
+    const scr = (K, p) => [K.px + K.f * p[0] / p[2], K.py - K.f * p[1] / p[2]];
+    const fmt = (p) => `${p[0].toFixed(3)} ${p[1].toFixed(3)}`;
+    const cut = (a, b) => { const t = (NEAR - a[2]) / (b[2] - a[2]); return a.map((v, k) => v + (b[k] - v) * t); };
+    function polyPath(K, world) {
+      const pts = world.map(([X, Z]) => toCam(K, X, Z)), out = [];
+      pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; if (a[2] >= NEAR) out.push(a); if ((a[2] >= NEAR) !== (b[2] >= NEAR)) out.push(cut(a, b)); });
+      return out.length ? 'M' + out.map((p) => fmt(scr(K, p))).join('L') + 'Z' : '';
+    }
+    function segment(K, X, Za, Zb) {
+      let a = toCam(K, X, Za), b = toCam(K, X, Zb);
+      if (a[2] < NEAR && b[2] < NEAR) return null;
+      if (a[2] < NEAR) a = cut(a, b); if (b[2] < NEAR) b = cut(b, a);
+      return { d: `M${fmt(scr(K, a))}L${fmt(scr(K, b))}`, z: (a[2] + b[2]) / 2 };
+    }
+
+    // Camera-0 shapes used as the targets of the perspective fix (same lines as the live projection inside the frame).
+    const P0 = (X, Z) => scr(cam0, toCam(cam0, X, Z)), Z_BELOW = 107.13 * 100 / (90 + 26.78), Z_MID = 107.13 * 100 / (61.5 + 26.78);
+    const shape0 = (X0, X1) => 'M' + [P0(X0, ZFAR), P0(X1, ZFAR), P0(X1, Z_BELOW), P0(X0, Z_BELOW), P0(X0, Z_MID)].map(fmt).join('L') + 'Z';
+    const line0 = (X) => `M${fmt(P0(X, ZFAR))}L${fmt(P0(X, Z_BELOW))}`;
+
+    // Lane dashes. Pseudo-depth d ∈ [0, 3] maps to world Z = 100 (1 + d): the old logo's flat dashes, the
+    // perspective fix and the camera move all share one pattern, so nothing jumps between stages.
+    const ZN = 1, ZF = 4, DD = ZF - ZN, NDASH = 4, PERIOD = DD / (NDASH - 0.645), LEN = PERIOD * 0.645;
+    const drive = { s: 0 }; // distance driven, in pseudo-depth units
+    const lanes = {
+      l: { el: document.getElementById('dashes-l'), tx: 39, ty: 2.5, bx: 39, by: 78.5, k: 0, X: CENTER.l, paths: [] },
+      r: { el: document.getElementById('dashes-r'), tx: 105, ty: 2.5, bx: 105, by: 78.5, k: 0, X: CENTER.r, paths: [] },
+    };
+    for (const L of Object.values(lanes)) for (let i = 0; i < 90; i++) {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('stroke', '#E5C331'); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('fill', 'none');
+      L.el.appendChild(p); L.paths.push(p);
+    }
+    const vAt = (d, k) => k * ((1 / (ZN + d) - 1 / ZF) / (1 / ZN - 1 / ZF)) + (1 - k) * (1 - d / DD); // 1 = frame bottom
+    const cam = { c: 0, live: false };
+
+    const sunL = document.getElementById('sun-l'), sunR = document.getElementById('sun-r');
+    const glowL = document.getElementById('glow-l'), glowR = document.getElementById('glow-r');
+    function renderScene() {
+      renderRoads();
+      for (const [el, road] of [[sunL, roadL], [sunR, roadR], [glowL, roadL], [glowR, roadR]]) el.setAttribute('d', road.getAttribute('d'));
+    }
+    function renderRoads() {
+      if (!cam.live) {
+        // Stages A–B: dashes along the screen centre line; k blends flat (A) into true perspective (B).
+        for (const L of Object.values(lanes)) L.paths.forEach((p, i) => {
+          if (i >= NDASH) { p.setAttribute('d', ''); return; }
+          const C = NDASH * PERIOD, a = (((i * PERIOD - drive.s) % C) + C) % C - LEN; // enters at the top, leaves at the bottom
+          const d1 = Math.max(0, a), d2 = Math.min(DD, a + LEN);
+          if (d2 - d1 < 0.005) { p.setAttribute('d', ''); return; }
+          const pt = (v) => `${(L.tx + (L.bx - L.tx) * v).toFixed(3)} ${(L.ty + (L.by - L.ty) * v).toFixed(3)}`;
+          p.setAttribute('d', `M${pt(vAt(d1, L.k))}L${pt(vAt(d2, L.k))}`);
+          p.setAttribute('stroke-width', (2.53 * (L.k * ZN / (ZN + (d1 + d2) / 2) + 1 - L.k)).toFixed(3));
+        });
+        return;
+      }
+      // Stage C: everything is projected through the moving camera.
+      const K = camAt(cam.c);
+      roadL.setAttribute('d', polyPath(K, WORLD.l));
+      roadR.setAttribute('d', polyPath(K, WORLD.r));
+      for (const [sel, [X, Zn]] of Object.entries(EDGES)) {
+        const e = document.querySelector(sel), sg = segment(K, X, Zn, ZFAR);
+        e.setAttribute('d', sg ? sg.d : ''); e.setAttribute('stroke-width', (1.79 * lerp(1, K1, Math.min(1, Math.max(0, cam.c)))).toFixed(3));
+      }
+      for (const L of Object.values(lanes)) L.paths.forEach((p, j) => {
+        const d1 = (j - 12) * PERIOD - drive.s - LEN; // every dash of the infinite road, not only the visible four
+        const sg = segment(K, L.X, 100 * (ZN + d1), 100 * (ZN + d1 + LEN));
+        if (!sg) { p.setAttribute('d', ''); return; }
+        p.setAttribute('d', sg.d); p.setAttribute('stroke-width', (2.53 * K.f / sg.z).toFixed(3));
+      });
+    }
+
+    // ─── Timing ───────────────────────────────────────────────────────────────────────────────────────
+    // Apple-style spring from perceptual duration + bounce (KB motion/animation-principles#springs):
+    // mass 1, ω = 2π / duration, damping ratio ζ = 1 − bounce; `time` lets it settle, the ease lands exactly on 1.
+    function spring(duration, bounce = 0, settle = 1.5) {
+      const w = 2 * Math.PI / duration, z = Math.max(0.0001, 1 - bounce), time = duration * settle;
+      const x = (t) => {
+        if (z >= 1) return 1 - (1 + w * t) * Math.exp(-w * t);
+        const wd = w * Math.sqrt(1 - z * z);
+        return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + (z * w / wd) * Math.sin(wd * t));
+      };
+      const end = x(time);
+      return { time, ease: (p) => (p >= 1 ? 1 : x(p * time) / end) };
+    }
+    const S = {
+      perspective: spring(0.85, 0, 1.25), // smooth and unhurried; settles before anything else takes the shapes
+      cam: spring(1.2, 0.1, 1.4),         // the camera move: slow and smooth, lands with a touch of weight
+      wipe: spring(0.45, 0),
+      leg: spring(0.8, 0.18),            // "la patita": long and elegant, settles with a little weight
+      settle: spring(0.55, 0.15),        // a small final settle
+    };
+    const at = (sp) => ({ duration: sp.time, ease: sp.ease });
+    const HOLD = 1.0;                                    // staging: the old logo reads first
+    const PERSP_END = HOLD + 0.08 + S.perspective.time;
+    const SUN = PERSP_END - 0.15, SUN_DUR = 1.25;         // the sunlight sweeps in as the perspective settles
+    const CAM_START = SUN + SUN_DUR - 0.1;               // the camera moves once the roads are fully yellow
+    const CAM_END = CAM_START + S.cam.time;
+    const LEG = CAM_START + S.cam.time * 0.88;           // overlaps the very end of the camera's settle
+    const BLUE = LEG + 0.62, SETTLE = BLUE + 0.1;
+    const MOTION_END = SETTLE + S.settle.time;           // > 5 s, so the page offers a pause control (WCAG 2.2.2)
+    const DURATION = MOTION_END + 1;                     // + 1 s still on the new symbol so it reads
+
+    function buildFull() {
+      const tl = gsap.timeline({ paused: true });
+      tl.set([roadL, roadR], { fill: DARK })
+        .set(cam, { live: false, c: 0 }, 0)
+        // A · lane lines run toward us from the start and slow down as the camera lands (slow out)
+        // A · lane lines run toward us the whole time; they never stop, they disappear under the sunlight
+        .to(drive, { s: 9, duration: CAM_END, ease: 'none' }, 0)
+        // B · perspective fixed: one vanishing point (the right road follows a beat later: overlapping action)
+        .to(roadL, { morphSVG: { shape: shape0(XL0, XL1), shapeIndex: 0 }, ...at(S.perspective) }, HOLD)
+        .to(roadR, { morphSVG: { shape: shape0(XR0, XR1), shapeIndex: 0 }, ...at(S.perspective) }, HOLD + 0.08)
+        .to('#edge-ll', { morphSVG: line0(XL0), ...at(S.perspective) }, HOLD)
+        .to('#edge-lr', { morphSVG: line0(XL1), ...at(S.perspective) }, HOLD)
+        .to('#edge-rl', { morphSVG: line0(XR0), ...at(S.perspective) }, HOLD + 0.08)
+        .to('#edge-rr', { morphSVG: line0(XR1), ...at(S.perspective) }, HOLD + 0.08);
+      const top = (X) => P0(X, 400), bot = (X) => P0(X, 100);
+      tl.to(lanes.l, { tx: top(CENTER.l)[0], ty: top(CENTER.l)[1], bx: bot(CENTER.l)[0], by: bot(CENTER.l)[1], k: 1, ...at(S.perspective) }, HOLD)
+        .to(lanes.r, { tx: top(CENTER.r)[0], ty: top(CENTER.r)[1], bx: bot(CENTER.r)[0], by: bot(CENTER.r)[1], k: 1, ...at(S.perspective) }, HOLD + 0.08)
+        // the sun hits the road: a soft band of light travels from the horizon toward us until both roads are yellow
+        .to('#sun-grad', { attr: { y1: 110, y2: 146 }, duration: SUN_DUR, ease: 'sine.inOut' }, SUN)
+        .to('#glow-grad', { attr: { y1: 106, y2: 150 }, duration: SUN_DUR, ease: 'sine.inOut' }, SUN)
+        // C · the camera move: slides right and tilts down until the yellow roads are the two bars, seen from above
+        .set(cam, { live: true }, CAM_START)
+        .to(cam, { c: 1, ...at(S.cam) }, CAM_START)
+        // once landed, the projected bars hand over to the final rounded shapes (same colour, no visible change)
+        .set('#ywipe', { x: 290 }, LEG)
+        .set('#old', { opacity: 0 }, LEG)
+        // as soon as yellow covers the right bar: a tiny pull-back (anticipation), then the leg slides out in an arc
+        .set('#grow', { opacity: 1 }, LEG)
+        .to('#grow-edge', { x: -2, duration: 0.12, ease: 'power1.inOut' }, LEG)
+        .to('#grow-edge', { x: 95, ...at(S.leg) }, LEG + 0.12)
+        .to('#grow-edge', { keyframes: { y: [0, -5, 0] }, duration: S.leg.time * 0.7, ease: 'sine.inOut' }, LEG + 0.12)
+        // blue sweeps in, overlapping the end of the leg (temporary stroke hides the yellow antialias fringe)
+        .set('#new path', { attr: { stroke: '#126BFD', 'stroke-width': 0.8, 'stroke-linejoin': 'round' } }, BLUE)
+        .to('#wipe', { x: 290, ...at(S.wipe) }, BLUE)
+        .set(['#yel', '#grow'], { opacity: 0 }, BLUE + S.wipe.time)
+        .set('#new path', { attr: { 'stroke-width': 0 } }, BLUE + S.wipe.time)
+        .fromTo('#logo', { scale: 0.97, transformOrigin: '50% 50%' }, { scale: 1, ...at(S.settle) }, SETTLE);
+      tl.eventCallback('onUpdate', renderScene);
+      if (tl.duration() < DURATION) tl.to({}, { duration: DURATION - tl.duration() }, tl.duration());
+      return tl;
+    }
+
+    // Reduced motion: no camera, morph, scale or movement; a plain cross-fade (KB ui/targets-focus-motion#animation-and-reduced-motion).
+    function buildReduced() {
+      const tl = gsap.timeline({ paused: true });
+      tl.to('#old', { opacity: 0, duration: 0.5 }, 0.4).fromTo('#new', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.9);
+      return tl;
+    }
+
+    document.documentElement.classList.add('js');
+    renderScene();
+    if (reduce) document.getElementById('new').removeAttribute('clip-path');
+    const tl = reduce ? buildReduced() : buildFull();
+
+    // Frame-capture hook used by render.mjs: seek to any time without playing.
+    window.renderAt = (t) => { tl.pause(); tl.time(Math.min(t, tl.duration())); renderScene(); return tl.time(); };
+    window.motionEnd = MOTION_END;
+    window.timelineDuration = tl.duration();
+
+    const pauseBtn = document.getElementById('pause');
+    const setPaused = (p) => { pauseBtn.textContent = p ? 'Continuar' : 'Pausar'; pauseBtn.setAttribute('aria-pressed', String(p)); };
+    pauseBtn.addEventListener('click', () => { tl.paused(!tl.paused()); setPaused(tl.paused()); });
+    document.getElementById('replay').addEventListener('click', () => { tl.restart(); setPaused(false); });
+
+    // Capture mode (with render.mjs): ?capture=<set>&size=WxH&fps=N&bg=<color>&firstFinal=1
+    // Draws every frame to a canvas (transparent unless bg is given) and POSTs it to the render server.
+    // firstFinal=1 prepends the final symbol, because clients that do not animate show only the first frame.
+    async function capture() {
+      const set = params.get('capture');
+      const [w, h] = (params.get('size') || '96x54').split('x').map(Number);
+      const fps = Number(params.get('fps') || 30);
+      const bg = params.get('bg');
+      const svg = document.getElementById('logo');
+      const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      // end=<s> stops the capture early (the signature APNG ends with the motion; its last frame stays on screen).
+      const end = Math.min(tl.duration(), Number(params.get('end')) || tl.duration());
+      const total = Math.round(end * fps);
+      const times = [];
+      if (params.get('firstFinal')) times.push(tl.duration());
+      for (let i = 0; i <= total; i++) times.push(i / fps);
+      for (const [i, t] of times.entries()) {
+        window.renderAt(t);
+        // Keep the 16:9 logo centred inside any output size (e.g. 1080x1080 for social).
+        const s = Math.min(w / 144, h / 81) * Number(params.get('fit') || 1);
+        const dw = Math.round(144 * s), dh = Math.round(81 * s);
+        const clone = svg.cloneNode(true);
+        clone.setAttribute('width', dw); clone.setAttribute('height', dh);
+        clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        const src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
+        const img = new Image();
+        await new Promise((ok, ko) => { img.onload = ok; img.onerror = ko; img.src = src; });
+        ctx.clearRect(0, 0, w, h);
+        if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h); }
+        ctx.drawImage(img, Math.round((w - dw) / 2), Math.round((h - dh) / 2), dw, dh);
+        const blob = await new Promise((ok) => canvas.toBlob(ok, 'image/png'));
+        await fetch(`/frame?set=${encodeURIComponent(set)}&i=${i}`, { method: 'POST', body: blob });
+      }
+      window.captureDone = times.length;
+    }
+
+    if (params.get('capture')) capture();
+    else if (!render) tl.play();
+  </script>
+</body>
+</html>
