@@ -10,3 +10,11 @@ bases:
       - { publisher: "Can I Email", url: "https://www.caniemail.com/" }
       - { publisher: "Google Developers", url: "https://developers.google.com/workspace/gmail/design/css" }
       - { publisher: "Apple Support", url: "https://support.apple.com/guide/mail/" }
+  motion:
+    sources:
+      - { publisher: "Apple", url: "https://developer.apple.com/videos/play/wwdc2023/10158/" }
+      - { publisher: "Nielsen Norman Group", url: "https://www.nngroup.com/articles/animation-duration/" }
+      - { publisher: "Wikipedia", url: "https://en.wikipedia.org/wiki/Twelve_basic_principles_of_animation" }
+      - { publisher: "Interaction Design Foundation", url: "https://ixdf.org/literature/" }
+      - { publisher: "New York Film Academy", url: "https://www.nyfa.edu/student-resources/" }
+      - { publisher: "The Lighting Lab", url: "https://thelightinglab.es/en/" }
